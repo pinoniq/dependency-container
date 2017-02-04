@@ -8,6 +8,7 @@
   },
   "author": "Jeroen Meeus",
   "license": "MIT",
+  "repository": "https://github.com/pinoniq/dependency-container.git",
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^3.2.0"
