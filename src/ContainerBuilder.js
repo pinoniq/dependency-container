@@ -5,7 +5,8 @@ var Definition = require('./Definition');
 /**
  * @constructor
  */
-function ContainerBuilder() {
+function ContainerBuilder(rootLoader) {
+    this.loader = rootLoader;
     /**
      * A collection of all currently instantiated services keyed by id
      *
@@ -91,7 +92,7 @@ ContainerBuilder.prototype = {
         arguments = this.resolveServices(definition.getArguments());
 
         // create our service with the required arguments
-        serviceConstructor = require(definition.getModulePath());
+        serviceConstructor = this.loader(definition.getModulePath());
 
         // prepend null to the arguments passed on to bind.
         // We set the thisArg of the bind call to null since it will never be used.
