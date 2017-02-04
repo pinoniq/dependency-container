@@ -33,6 +33,10 @@ function ContainerBuilder() {
 
 ContainerBuilder.prototype = {
 
+    /**
+     * @param id
+     * @returns {*}
+     */
     get: function get(id) {
         var definition, service;
 
@@ -118,6 +122,14 @@ ContainerBuilder.prototype = {
         }
 
         return this.definitions[id];
+    },
+
+    /**
+     * @param name
+     * @param value
+     */
+    addParameter: function addParameter(name, value) {
+        this.services[name] = value;
     }
 
 };

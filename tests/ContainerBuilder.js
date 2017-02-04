@@ -10,6 +10,13 @@ var DependencyB = require('./modules/DependencyB');
 
 
 describe('ContainerBuilder', function() {
+    it('get() should recieve the value of an added parameter', function() {
+        var container = new ContainerBuilder();
+        container
+            .addParameter('test', 'value');
+        expect(container.get('test')).to.equal('value');
+    });
+
     it('get() should throw a ServiceNotFoundException for an unknown service', function() {
         var container = new ContainerBuilder();
         expect(container.get.bind(container, 'unknown')).to.throw(new ServiceNotFoundException('unknown'));
