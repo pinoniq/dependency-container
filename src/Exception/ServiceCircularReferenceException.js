@@ -6,7 +6,7 @@ var DependencyInjectionException = require('./DependencyInjectionException');
  * @constructor
  */
 function ServiceCircularReferenceException(id, path) {
-    this.message = "Circular reference detected for service " + id + ", path: " + path.join(' -> ') + ".";
+    this.message = "Circular reference detected for service " + id + ", path: " + Array.prototype.join.call(path, ' -> ') + ".";
 }
 
 ServiceCircularReferenceException.prototype = DependencyInjectionException.prototype;

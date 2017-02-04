@@ -89,6 +89,10 @@ ContainerBuilder.prototype = {
         // create our service with the required arguments
         serviceConstructor = require(definition.getModulePath());
 
+        // prepend null to the arguments passed on to bind.
+        // We set the thisArg of the bind call to null since it will never be used.
+        arguments.unshift(null);
+
         return new (Function.prototype.bind.apply(serviceConstructor, arguments))();
     },
 
