@@ -1,5 +1,6 @@
 var ServiceCircularReferenceException = require('./Exception/ServiceCircularReferenceException');
 var ServiceNotFoundException = require('./Exception/ServiceNotFoundException');
+var ParameterNotFoundException = require('./Exception/ParameterNotFoundException');
 var Definition = require('./Definition');
 
 /**
@@ -30,6 +31,13 @@ function ContainerBuilder(rootLoader) {
      * @type {{Definition}}
      */
     this.definitions = {};
+
+    /**
+     * A collection of parameters indexed by name
+     *
+     * @type {{}}
+     */
+    this.parameters = {};
 }
 
 ContainerBuilder.prototype = {
@@ -79,6 +87,19 @@ ContainerBuilder.prototype = {
     },
 
     /**
+     * Add a parameter to the Container
+     *
+     * @param {String} name
+     * @param {*} value
+     * @returns {Definition}
+     */
+    addParameter: function addParameter(name, value) {
+        this.parameters[name] = value;
+
+        return this;
+    },
+
+    /**
      * Create an instance of the service defined by definition.
      *
      * @param {Definition} definition
@@ -89,7 +110,7 @@ ContainerBuilder.prototype = {
         var serviceConstructor, arguments;
 
         // resolve our arguments to actual services
-        arguments = this.resolveServices(definition.getArguments());
+        arguments = this.resolveArguments(definition.getArguments());
 
         // create our service with the required arguments
         serviceConstructor = this.loader(definition.getModulePath());
@@ -102,14 +123,26 @@ ContainerBuilder.prototype = {
     },
 
     /**
-     * Resolves an array of services
+     * Resolves an array of arguments
      *
-     * @param {Array} serviceIds an array of service ids to resolve
+     * @param {Array} argumentIds an array of argument ids to resolve
      * @returns {Array} an array of resolved services
      */
-    resolveServices: function resolveServices(serviceIds) {
-        return serviceIds.map(function(id) {
-            return this.get(id);
+    resolveArguments: function resolveArguments(argumentIds) {
+        return argumentIds.map(function(argumentId) {
+            switch(argumentId.charAt(0)) {
+                case '@':
+                    return this.get(argumentId);
+                    break;
+
+                case '%':
+                    return this.getParameter(argumentId);
+                    break;
+
+                default:
+                    return argumentId;
+                    break;
+            }
         }.bind(this));
     },
 
@@ -129,8 +162,12 @@ ContainerBuilder.prototype = {
      * @param name
      * @param value
      */
-    addParameter: function addParameter(name, value) {
-        this.services[name] = value;
+    getParameter: function addParameter(name) {
+        if (!{}.hasOwnProperty.call(this.parameters, name)) {
+            throw new ParameterNotFoundException(name);
+        }
+
+        return this.parameters[name];
     }
 
 };

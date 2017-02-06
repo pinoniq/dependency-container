@@ -2,7 +2,6 @@ var DependencyInjectionException = require('./DependencyInjectionException');
 
 /**
  * @param {String} id
- * @param {Array} path
  * @constructor
  */
 function ServiceNotFoundException(id) {
