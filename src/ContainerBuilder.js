@@ -132,11 +132,11 @@ ContainerBuilder.prototype = {
         return argumentIds.map(function(argumentId) {
             switch(argumentId.charAt(0)) {
                 case '@':
-                    return this.get(argumentId);
+                    return this.get(argumentId.substr(1));
                     break;
 
                 case '%':
-                    return this.getParameter(argumentId);
+                    return this.getParameter(argumentId.substr(1));
                     break;
 
                 default:
