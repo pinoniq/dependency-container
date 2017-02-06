@@ -47,10 +47,16 @@ A definition can also be retrieved using
 var myServiceDefinition = myContainerBuilder.getDefinition('serviceID');
 ```
 
-IF for instance your service has a dependencie to another service, this can be added as an argument:
+If your service requires values to be injected when create, you can configure it's arguments:
 
 ```javascript
-myServiceDefinition.addArgument('otherServiceId');
+myServiceDefinition.addArgument('someValue');
+```
+
+Next to simple values, you can also reference other services:
+
+```javascript
+myServiceDefinition.addArgument('@someOtherServiceId');
 ```
 
 calling ```myContainerBuilder.get('serviceId')``` will create an instance of you service with the resolved otherServiceId passed in as an argument
@@ -58,13 +64,13 @@ calling ```myContainerBuilder.get('serviceId')``` will create an instance of you
 ## Adding parameters to the Container
 
 ```javascript
-myContainerBuilder.addArgument('argumentName', 'value');
+myContainerBuilder.addParameter('parameterName', 'value');
 ```
 
-The argumentName can also be used in definitions:
+The argumentName can also be used in definitions by prefixing it's name with %:
 
 ```javascript
-myServiceDefinition.addArgument('argumentName');
+myServiceDefinition.addArgument('%parameterName');
 ```
 
 ## Roadmap
