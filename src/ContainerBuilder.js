@@ -7,13 +7,15 @@ var Definition = require('./Definition');
  * @constructor
  */
 function ContainerBuilder(rootLoader) {
-    this.loader = rootLoader;
     /**
      * A collection of all currently instantiated services keyed by id
      *
      * @type {{}}
      */
-    this.services = {};
+    this.services = {
+        'service_locator': rootLoader,
+        'service_container': this
+    };
 
     /**
      * A collection of all currently being loaded services keyed by id
@@ -49,10 +51,6 @@ ContainerBuilder.prototype = {
     get: function get(id) {
         var definition, service;
 
-        if ('service_container' === id) {
-            return this;
-        }
-
         if ({}.hasOwnProperty.call(this.services, id)) {
             return this.services[id];
         }
@@ -65,7 +63,7 @@ ContainerBuilder.prototype = {
 
         definition = this.getDefinition(id);
         try {
-            service = this.createService(definition, id);
+            service = this.createService(definition);
         } finally {
             delete this.loading[id];
         }
@@ -103,17 +101,16 @@ ContainerBuilder.prototype = {
      * Create an instance of the service defined by definition.
      *
      * @param {Definition} definition
-     * @param {String} id
      * @returns {*}
      */
-    createService: function createService(definition, id) {
+    createService: function createService(definition) {
         var serviceConstructor, arguments;
 
         // resolve our arguments to actual services
         arguments = this.resolveArguments(definition.getArguments());
 
         // create our service with the required arguments
-        serviceConstructor = this.loader(definition.getModulePath());
+        serviceConstructor = this.get('service_locator').resolve(definition.getModulePath());
 
         // prepend null to the arguments passed on to bind.
         // We set the thisArg of the bind call to null since it will never be used.
@@ -160,9 +157,8 @@ ContainerBuilder.prototype = {
 
     /**
      * @param name
-     * @param value
      */
-    getParameter: function addParameter(name) {
+    getParameter: function getParameter(name) {
         if (!{}.hasOwnProperty.call(this.parameters, name)) {
             throw new ParameterNotFoundException(name);
         }

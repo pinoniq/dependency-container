@@ -2,6 +2,7 @@ var chai = require('chai');
 var expect = chai.expect;
 
 var ContainerBuilder = require('./../src/ContainerBuilder');
+var ServiceLocator = require('./../src/ServiceLocator');
 var ServiceNotFoundException = require('./../src/Exception/ServiceNotFoundException');
 var ParameterNotFoundException = require('./../src/Exception/ParameterNotFoundException');
 var ServiceCircularReferenceException = require('./../src/Exception/ServiceCircularReferenceException');
@@ -13,32 +14,41 @@ var DependencyB = require('./modules/DependencyB');
 
 describe('ContainerBuilder', function() {
     it('getParameter() should return the value of an added parameter', function() {
-        var container = new ContainerBuilder(require);
+        var container = new ContainerBuilder({resolve: require});
         container
             .addParameter('test', 'value');
         expect(container.getParameter('test')).to.equal('value');
     });
 
     it('getParameter() should throw a ParameterNotFoundException for an unknown parameter', function() {
-        var container = new ContainerBuilder(require);
+        var container = new ContainerBuilder({resolve: require});
         expect(container.get.bind(container, 'unknown')).to.throw(new ParameterNotFoundException('unknown'));
     });
 
     it('get() should return the defined service', function() {
-        var container = new ContainerBuilder(require);
+        var container = new ContainerBuilder({resolve: require});
         container
             .register('test', './../tests/modules/TestModuleWithoutDependency');
         var service = container.get('test');
         expect(service instanceof TestModuleWithoutDependency).to.equal(true);
     });
 
+    it('get("service_container") should return the container itself', function() {
+        var container = new ContainerBuilder({resolve: require});
+        container
+            .register('test', './../tests/modules/TestModuleWithoutDependency');
+        var service = container.get('service_container');
+        expect(service instanceof ContainerBuilder).to.equal(true);
+        expect(service).to.equal(container);
+    });
+
     it('get() should throw a ServiceNotFoundException for an unknown service', function() {
-        var container = new ContainerBuilder(require);
+        var container = new ContainerBuilder({resolve: require});
         expect(container.get.bind(container, 'unknown')).to.throw(new ServiceNotFoundException('unknown'));
     });
 
     it('get() should throw a ServiceCircularReferenceException for a circular dependency', function() {
-        var container = new ContainerBuilder(require);
+        var container = new ContainerBuilder({resolve: require});
         container
             .register('test', './../tests/modules/TestModuleWithSingleDependency')
             .addArgument('@test');
@@ -46,7 +56,7 @@ describe('ContainerBuilder', function() {
     });
 
     it('get() should throw a ServiceCircularReferenceException for a circular dependency with a defined path', function() {
-        var container = new ContainerBuilder(require);
+        var container = new ContainerBuilder({resolve: require});
         container
             .register('testA', './../tests/modules/TestModuleWithoutDependency');
         container
@@ -59,7 +69,7 @@ describe('ContainerBuilder', function() {
     });
 
     it('get() should load dependencies respecting the order', function() {
-        var container = new ContainerBuilder(require);
+        var container = new ContainerBuilder({resolve: require});
         container
             .register('depA', './../tests/modules/DependencyA');
         container
