@@ -1,0 +1,24 @@
+{
+  "parameters": {
+    "parameterKey": "parameterValue"
+  },
+  "services": {
+    "dependency_a": {
+      "module": "DependencyA"
+    },
+    "dependency_b": {
+      "module": "DependencyB"
+    },
+    "multiple_dependency": {
+      "module": "TestModuleWithDependencies",
+      "arguments": ["@dependency_a", "@dependency_b"]
+    },
+    "no_dependency": {
+      "module": "TestModuleWithDependencies"
+    },
+    "single_dependency": {
+      "module": "TestModuleWithSingleDependency",
+      "arguments": ["@dependency_a"]
+    }
+  }
+}
