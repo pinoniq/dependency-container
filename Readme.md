@@ -1,6 +1,21 @@
 # Dependecy Injection Container for Node
 
-A simple DIC based heavily on the Symfony DI Component.
+A simple DIC and ServiceLocator based heavily on the Symfony DI Component.
+
+## Concepts
+
+A container loads a requested service using a given ServiceLocator.
+
+But, we have require, right?
+
+## Differences with require and it's ../ hell
+
+A small lists, because lists are cool:
+
+* require does not support alias
+* require does not support parameter binding
+* require tends to be a pain in the *ss with it's relative paths
+* require kind of enforces tight coupling of implementations
 
 ## Installation
 
@@ -8,58 +23,84 @@ A simple DIC based heavily on the Symfony DI Component.
 npm install dependencyinjection --save
 ```
 
-## Configuration
+## Usage
 
-The dependency injection container needs to be instantiated with a file loader.
-Often, the global require will be enough:
+### Container
+
+Since it's a dependency injection container library (so many words), we need to start with our ContainerBuilder:
 
 ```javascript
 var ContainerBuilder = require('dependencyinjection/src/ContainerBuilder');
-var myContainerBuilder = new ContainerBuilder(require);
 ```
 
-## Usage
-
-Before using it, the container needs to be configured:
-
-## Registering services
-To register a service:
+The container builder requires a ServiceLocator as an argument. A service locator is a dock that quacks like:
 
 ```javascript
-myContainerBuilder.register('serviceId', 'my/service');
+{
+    /**
+     * Resolve a serviceId and require the module
+     *
+     * @param serviceId
+     * @returns {*}
+     */
+    resolve: function resolve(serviceId) {}
+}
 ```
 
-retrieving an instance of your service now becomes:
+If you really like require, you can use the following:
 
 ```javascript
-myContainerBuilder.get('serviceId');
+var container = new ContainerBuilder({
+    resolve: require
+});
 ```
 
-## Configuring service definitions
 
-When registering a service, a definition of that service is returned:
-```javascript
-var myServiceDefinition = myContainerBuilder.register('serviceId', 'my/service');
-```
+### Registering services
 
-A definition can also be retrieved using
- ```javascript
-var myServiceDefinition = myContainerBuilder.getDefinition('serviceID');
-```
-
-If your service requires values to be injected when create, you can configure it's arguments:
+To add a service to the container:
 
 ```javascript
-myServiceDefinition.addArgument('someValue');
+container.register('serviceId', 'my/service');
 ```
 
-Next to simple values, you can also reference other services:
+Now, this service can be retrieved anywhere using:
 
 ```javascript
-myServiceDefinition.addArgument('@someOtherServiceId');
+container.get('serviceId');
 ```
 
-calling ```myContainerBuilder.get('serviceId')``` will create an instance of you service with the resolved otherServiceId passed in as an argument
+> Internally this will call the ServiceLocator.reslolve(serviceId) to retrieve the module
+> Once retrieved, it will instantiate an instance and return it
+
+> By default all services are Singletons, once instantiated, the same object is allways returned
+
+### Definint our services
+
+When registering a service, a Definition object is returned.
+This allows us to configure the way our container will load our service.
+
+```javascript
+var definition = container.register('serviceId', 'my/service');
+```
+
+We can now add arguments to the definition:
+
+```javascript
+definition.addArgument('someValue');
+```
+
+> When the service is retrieve, 'someValue' will be passed in to the constructor as first argument.
+
+> Currently named parameters are not yet supported, but are on the roadmap \o/
+
+Next to simple value arguments, the container also supports references to other services:
+
+```javascript
+definition.addArgument('@serviceIdOfTheServiceThatNeedsToBeAddedAsADependency');
+```
+
+> Note that it's advised to not use serviceId's like the one above.
 
 ## Adding parameters to the Container
 
@@ -67,15 +108,24 @@ calling ```myContainerBuilder.get('serviceId')``` will create an instance of you
 myContainerBuilder.addParameter('parameterName', 'value');
 ```
 
-The argumentName can also be used in definitions by prefixing it's name with %:
+We can now reference this parameter as an argument of our definitions:
 
 ```javascript
 myServiceDefinition.addArgument('%parameterName');
 ```
 
+## ServiceLocator
+
+@TODO: write doc
+
+## JsonFileLoader
+
+@TODO: write doc
+
 ## Roadmap
 
-Implement all functionalities the Symfony DI Component delivers.
+* allow named arguments in servide definitions
+* cool stuff
 
 ## Author
 
