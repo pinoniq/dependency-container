@@ -1,12 +1,12 @@
-var ServiceCircularReferenceException = require('./Exception/ServiceCircularReferenceException');
-var ServiceNotFoundException = require('./Exception/ServiceNotFoundException');
-var ParameterNotFoundException = require('./Exception/ParameterNotFoundException');
-var Definition = require('./Definition');
+const ServiceCircularReferenceException = require('./Exception/ServiceCircularReferenceException');
+const ServiceNotFoundException = require('./Exception/ServiceNotFoundException');
+const ParameterNotFoundException = require('./Exception/ParameterNotFoundException');
+const Definition = require('./Definition');
 
 /**
  * @constructor
  */
-function ContainerBuilder(rootLoader) {
+function Container(rootLoader) {
     /**
      * A collection of all currently instantiated services keyed by id
      *
@@ -42,14 +42,14 @@ function ContainerBuilder(rootLoader) {
     this.parameters = {};
 }
 
-ContainerBuilder.prototype = {
+Container.prototype = {
 
     /**
      * @param id
      * @returns {*}
      */
     get: function get(id) {
-        var definition, service;
+        let definition, service;
 
         if ({}.hasOwnProperty.call(this.services, id)) {
             return this.services[id];
@@ -104,19 +104,19 @@ ContainerBuilder.prototype = {
      * @returns {*}
      */
     createService: function createService(definition) {
-        var serviceConstructor, arguments;
+        let serviceConstructor, serviceArguments;
 
         // resolve our arguments to actual services
-        arguments = this.resolveArguments(definition.getArguments());
+        serviceArguments = this.resolveArguments(definition.getArguments());
 
         // create our service with the required arguments
         serviceConstructor = this.get('service_locator').resolve(definition.getModulePath());
 
         // prepend null to the arguments passed on to bind.
         // We set the thisArg of the bind call to null since it will never be used.
-        arguments.unshift(null);
+        serviceArguments.unshift(null);
 
-        return new (Function.prototype.bind.apply(serviceConstructor, arguments))();
+        return new (Function.prototype.bind.apply(serviceConstructor, serviceArguments))();
     },
 
     /**
@@ -168,4 +168,4 @@ ContainerBuilder.prototype = {
 
 };
 
-module.exports = ContainerBuilder;
+module.exports = Container;

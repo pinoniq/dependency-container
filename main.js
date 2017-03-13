@@ -4,21 +4,14 @@
  *
  * @TODO write doc
  * @TODO write tests for FileLoader
- * @type {ContainerBuilder}
+ * @type {Container}
  */
-var ContainerBuilder = require('./src/ContainerBuilder');
-var ServiceLocator = require('./src/ServiceLocator');
-var JsonFileLoader = require('./src/Loader/JsonFileLoader');
+const Container = require('./src/Container');
+const ServiceLocator = require('./src/ServiceLocator');
+const JsonFileLoader = require('./src/Loader/JsonFileLoader');
 
-var container = new ContainerBuilder(new ServiceLocator());
-var loader = new JsonFileLoader(container);
-
-loader.loadFile('test', require('path').resolve(__dirname, './tests/modules/services.json'));
-
-// loader.getParameter('parameterKey');
-
-// loader.get('dependency_a');;
-
-// loader.get('single_dependency');
-
-
+export default {
+    Container: Container,
+    ServiceLocator: ServiceLocator,
+    JsonFileLoader: JsonFileLoader
+};

@@ -6,7 +6,9 @@ A simple DIC and ServiceLocator based heavily on the Symfony DI Component.
 
 A container loads a requested service using a given ServiceLocator.
 
-But, we have require, right?
+FileLoaders configure the containers for a set of Services.
+
+But, we have require/import/whatever, right?
 
 ## Differences with require and it's ../ hell
 
@@ -25,105 +27,74 @@ npm install dependencyinjection --save
 
 ## Usage
 
-### Container
-
-Since it's a dependency injection container library (so many words), we need to start with our ContainerBuilder:
+Start by Creating a simple service, e.g. in the folder moduleA:
 
 ```javascript
-var ContainerBuilder = require('dependencyinjection/src/ContainerBuilder');
-```
+// @file moduleA/Service.js
+function Service(message) {
+    this.message = message;
+}
 
-The container builder requires a ServiceLocator as an argument. A service locator is a dock that quacks like:
-
-```javascript
-{
-    /**
-     * Resolve a serviceId and require the module
-     *
-     * @param serviceId
-     * @returns {*}
-     */
-    resolve: function resolve(serviceId) {}
+Service.prototype = {
+    test: function test() {
+        console.info(this.message);
+    }
 }
 ```
 
-If you really like require, you can use the following:
+Now we have created our Service, we will add the service to our JSON definition file:
 
-```javascript
-var container = new ContainerBuilder({
-    resolve: require
-});
+```json
+// @file moduleA/services.json
+{
+  "services": {
+    "myService": {
+      "module": "Service",
+      "arguments": ["%foo"]
+    }
+  }
+}
 ```
 
+Notice how we define an argument that is a parameter called foo. For more info see [ServiceDefinition](doc/ServiceDefinition.md)
 
-### Registering services
+Let's add this parameter to our container definition:
 
-To add a service to the container:
-
-```javascript
-container.register('serviceId', 'my/service');
+```json
+// @file moduleA/services.json
+{
+  "parameters": {
+    "foo": "bar"
+  },
+  "services": {
+    "myService": {
+      "module": "Service",
+      "arguments": ["%foo"]
+    }
+  }
+}
 ```
 
-Now, this service can be retrieved anywhere using:
+Now that we have defined our services, we need to fire up the container, and let the JsonFileLoader do it's job:
 
 ```javascript
-container.get('serviceId');
+import DIC from dependencyinjection;
+
+const container = new DIC.Container(new DIC.ServiceLocator());
+const loader = new DIC.JsonFileLoader(container);
+loader.loadFile('ModuleA', './ModuleA/services.json')
 ```
 
-> Internally this will call the ServiceLocator.reslolve(serviceId) to retrieve the module
-> Once retrieved, it will instantiate an instance and return it
-
-> By default all services are Singletons, once instantiated, the same object is allways returned
-
-### Definint our services
-
-When registering a service, a Definition object is returned.
-This allows us to configure the way our container will load our service.
+That's it, you can now start using your services:
 
 ```javascript
-var definition = container.register('serviceId', 'my/service');
+const myService = container.get('myService');
+myService.test(); // will log "bar" to console.info
 ```
-
-We can now add arguments to the definition:
-
-```javascript
-definition.addArgument('someValue');
-```
-
-> When the service is retrieve, 'someValue' will be passed in to the constructor as first argument.
-
-> Currently named parameters are not yet supported, but are on the roadmap \o/
-
-Next to simple value arguments, the container also supports references to other services:
-
-```javascript
-definition.addArgument('@serviceIdOfTheServiceThatNeedsToBeAddedAsADependency');
-```
-
-> Note that it's advised to not use serviceId's like the one above.
-
-## Adding parameters to the Container
-
-```javascript
-myContainerBuilder.addParameter('parameterName', 'value');
-```
-
-We can now reference this parameter as an argument of our definitions:
-
-```javascript
-myServiceDefinition.addArgument('%parameterName');
-```
-
-## ServiceLocator
-
-@TODO: write doc
-
-## JsonFileLoader
-
-@TODO: write doc
 
 ## Roadmap
 
+* document the JsonFileLoader
 * allow named arguments in servide definitions
 * cool stuff
 

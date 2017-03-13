@@ -1,5 +1,5 @@
 /**
- * @param {ContainerBuilder} container
+ * @param {Container} container
  * @constructor
  */
 function JsonFileLoader(container) {
@@ -22,7 +22,7 @@ JsonFileLoader.prototype = {
      * @param file
      */
     parseFile: function parseFile(file) {
-        var serviceDefinitions = require(file);
+        let serviceDefinitions = require(file);
         // add all parameters
         Object.keys(serviceDefinitions['parameters']).forEach(function(key) {
             this.container.addParameter(key, serviceDefinitions['parameters'][key]);
@@ -30,8 +30,8 @@ JsonFileLoader.prototype = {
 
         // add all services
         Object.keys(serviceDefinitions['services']).forEach(function(key) {
-            var serviceDefinition = serviceDefinitions['services'][key];
-            var definition = this.container.register(key, serviceDefinition['path']);
+            let serviceDefinition = serviceDefinitions['services'][key];
+            let definition = this.container.register(key, serviceDefinition['path']);
             if ({}.hasOwnProperty.call(serviceDefinition, 'arguments')) {
                 serviceDefinition['arguments'].forEach(function(argument) {
                     definition.addArgument(argument);

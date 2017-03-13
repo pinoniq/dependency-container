@@ -38,7 +38,7 @@ ServiceLocator.prototype = {
      * @returns {String}
      */
     resolvePath: function resolvePath(serviceId) {
-        for (var alias in this.alias) {
+        for (const alias in this.alias) {
             if (!{}.hasOwnProperty.call(this.alias, alias)) { continue; }
 
             if (alias !== serviceId.substr(0, alias.length)) {
