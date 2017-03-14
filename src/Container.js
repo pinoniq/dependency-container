@@ -62,6 +62,7 @@ Container.prototype = {
         this.loading[id] = true;
 
         definition = this.getDefinition(id);
+
         try {
             service = this.createService(definition);
         } finally {

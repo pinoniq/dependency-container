@@ -15,13 +15,14 @@ JsonFileLoader.prototype = {
         // add the services as alias
         this.container.get('service_locator').addAlias(alias, require('path').dirname(file));
         // load the file and parse it's content
-        this.parseFile(file);
+        this.parseFile(alias, file);
     },
 
     /**
+     * @param alias
      * @param file
      */
-    parseFile: function parseFile(file) {
+    parseFile: function parseFile(alias, file) {
         let serviceDefinitions = require(file);
         // add all parameters
         Object.keys(serviceDefinitions['parameters']).forEach(function(key) {
@@ -31,7 +32,7 @@ JsonFileLoader.prototype = {
         // add all services
         Object.keys(serviceDefinitions['services']).forEach(function(key) {
             let serviceDefinition = serviceDefinitions['services'][key];
-            let definition = this.container.register(key, serviceDefinition['path']);
+            let definition = this.container.register(`${alias}/${key}`, `${alias}/${serviceDefinition['module']}`);
             if ({}.hasOwnProperty.call(serviceDefinition, 'arguments')) {
                 serviceDefinition['arguments'].forEach(function(argument) {
                     definition.addArgument(argument);
