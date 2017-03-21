@@ -3,9 +3,9 @@
 Since it's a dependency injection container library (so many words), we need to start with our Container:
 
 ```javascript
-const Container = require('dependencyinjection/src/Container');
+const DIC = require('dependencyinjection');
 
-const myContainer = new Container(serviceLocator);
+const myContainer = new DIC.Container(serviceLocator);
 ```
 
 ## Registering services
@@ -16,7 +16,7 @@ To add a service to the container:
 myContainer.register('serviceId', 'my/service');
 ```
 
-> The register method returns a Definition object. See [ServiceDefinition](doc/ServiceDefinition.md) for more info
+> The register method returns a Definition object. See [ServiceDefinition](/doc/ServiceDefinition.md) for more info
 
 ## Retrieving services
 
@@ -68,19 +68,18 @@ The container builder requires a ServiceLocator as an argument. A service locato
 If you really like require, you can use the following:
 
 ```javascript
-const Container = require('dependencyinjection/src/Container');
+const DIC = require('dependencyinjection');
 
-var container = new Container({
+var container = new DIC.Container({
     resolve: require
 });
 ```
 
-This package comes built in with a more advanced ServiceLocator that adds a lot of sugat. See [ServiceLocator](doc/ServiceLocator.md)..
+This package comes built in with a more advanced ServiceLocator that adds a lot of sugar. See [ServiceLocator](/doc/ServiceLocator.md)..
 
 ```javascript
-const ServiceLocator = require('dependencyinjection/src/ServiceLocator')
-const Container = require('dependencyinjection/src/Container');
+const DIC = require('dependencyinjection')
 
-const myServiceLocator = new ServiceLocator();
-const myContainer = new Container(myServiceLocator);
+const myServiceLocator = new DIC.ServiceLocator();
+const myContainer = new DIC.Container(myServiceLocator);
 ```

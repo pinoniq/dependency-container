@@ -1,6 +1,6 @@
 # Defining our services
 
-When registering a service, a Definition object is returned. (See [Container::register](doc/Container.md))
+When registering a service, a Definition object is returned. (See [Container::register](/doc/Container.md))
 This allows us to configure the way our container will load our service.
 
 ```javascript
