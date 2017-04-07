@@ -88,13 +88,17 @@ loader.loadFile('ModuleA', './ModuleA/services.json')
 That's it, you can now start using your services:
 
 ```javascript
-const myService = container.get('myService');
+const myService = container.get('ModuleA/myService');
 myService.test(); // will log "bar" to console.info
 ```
+## Documentation
+
+* [Container](doc/Container.md)
+* [ServiceDefinition](doc/ServiceDefinition.md)
+* [ServiceLocator](doc/ServiceLocator.md)
 
 ## Roadmap
 
-* document the JsonFileLoader
 * allow named arguments in servide definitions
 * cool stuff
 
