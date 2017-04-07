@@ -40,6 +40,8 @@ Service.prototype = {
         console.info(this.message);
     }
 }
+
+module.exports = Service;
 ```
 
 Now we have created our Service, we will add the service to our JSON definition file:
@@ -56,7 +58,7 @@ Now we have created our Service, we will add the service to our JSON definition 
 }
 ```
 
-Notice how we define an argument that is a parameter called foo. For more info see [ServiceDefinition](doc/ServiceDefinition.md)
+Notice how we define an argument that is a parameter called foo. For more info see [ServiceDefinition](./doc/ServiceDefinition.md)
 
 Let's add this parameter to our container definition:
 
@@ -82,13 +84,14 @@ import DIC from dependencyinjection;
 
 const container = new DIC.Container(new DIC.ServiceLocator());
 const loader = new DIC.JsonFileLoader(container);
-loader.loadFile('ModuleA', './ModuleA/services.json')
+loader.loadFile('ModuleAlias', __dirname + '/ModuleA/services.json')
 ```
 
 That's it, you can now start using your services:
 
 ```javascript
-const myService = container.get('ModuleA/myService');
+
+const myService = container.get('ModuleAlias/myService');
 myService.test(); // will log "bar" to console.info
 ```
 ## Documentation
