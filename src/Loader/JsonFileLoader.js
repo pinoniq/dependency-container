@@ -38,6 +38,11 @@ JsonFileLoader.prototype = {
                     definition.addArgument(argument);
                 });
             }
+            if ({}.hasOwnProperty.call(serviceDefinition, 'tags')) {
+                serviceDefinition['tags'].forEach(function(tagName) {
+                    definition.addTag(tagName);
+                });
+            }
         }.bind(this));
     }
 };

@@ -73,6 +73,15 @@ Container.prototype = {
     },
 
     /**
+     * Returns the list of all definitions
+     *
+     * @returns {{Definition}}
+     */
+    getDefinitions: function getDefinitions() {
+        return this.definitions;
+    },
+
+    /**
      * Register a service in the Container with the given id
      *
      * @param {String} id
