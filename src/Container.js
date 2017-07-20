@@ -90,6 +90,22 @@ Container.prototype = {
     },
 
     /**
+     * Returns a list of services tagged with the given tag.
+     *
+     * @param {string} tag
+     * @returns {Array}
+     */
+    getByTag: function getByTag(tag) {
+        const definitionIdsWithTag = Object.keys(this.definitions).filter(function filterByTag(id) {
+            return this.getDefinition(id).hasTag(tag);
+        }.bind(this));
+
+        return definitionIdsWithTag.map(function mapDefinitionToService(id) {
+            return this.get(id);
+        }.bind(this))
+    },
+
+    /**
      * Register a service in the Container with the given id
      *
      * @param {String} id
