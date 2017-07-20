@@ -43,6 +43,10 @@ JsonFileLoader.prototype = {
                     definition.addTag(tagName);
                 });
             }
+
+            if ({}.hasOwnProperty.call(serviceDefinition, 'singleton')) {
+                definition.setSingleton(!!serviceDefinition.singleton);
+            }
         }.bind(this));
     }
 };

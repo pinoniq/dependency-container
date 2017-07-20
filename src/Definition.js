@@ -15,6 +15,13 @@ function Definition(modulePath) {
      * @type {Array}
      */
     this.tags = [];
+
+    /**
+     * Whether the service is a singleton or not
+     *
+     * @type {boolean}
+     */
+    this.singleton = true;
 }
 
 Definition.prototype = {
@@ -65,6 +72,20 @@ Definition.prototype = {
      */
     hasTag: function hasTag(tagName) {
         return this.tags.includes(tagName);
+    },
+
+    /**
+     * @returns {boolean}
+     */
+    isSingleton: function isSingleton() {
+        return this.singleton;
+    },
+
+    /**
+     * @param {boolean} singleton
+     */
+    setSingleton: function setSingleton(singleton) {
+        this.singleton = singleton;
     }
 
 };

@@ -51,6 +51,12 @@ Container.prototype = {
     get: function get(id) {
         let definition, service;
 
+        if (id === 'service_locator' || id === 'service_container') {
+            return this.services[id];
+        }
+
+        definition = this.getDefinition(id);
+
         if ({}.hasOwnProperty.call(this.services, id)) {
             return this.services[id];
         }
@@ -61,12 +67,14 @@ Container.prototype = {
 
         this.loading[id] = true;
 
-        definition = this.getDefinition(id);
-
         try {
             service = this.createService(definition);
         } finally {
             delete this.loading[id];
+        }
+
+        if (definition.isSingleton()) {
+            this.services[id] = service;
         }
 
         return service;
