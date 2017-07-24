@@ -102,10 +102,8 @@ myService.test(); // will log "bar" to console.info
 
 ## Roadmap
 
-* allow named arguments in servide definitions
 * cool stuff
 
 ## Author
 
  - Jeroen "pinoniq" Meeus
- 

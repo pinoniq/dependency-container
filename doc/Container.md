@@ -30,6 +30,39 @@ myContainer.get('serviceId');
 > Once retrieved, it will instantiate an instance and return it
 
 > By default all services are Singletons, once instantiated, the same object is allways returned
+> @see ServiceDefinition::setSingleton()
+
+### Overwriting service parameters.
+When working with non-singleton services. Some parameters are calculated at run-time.
+You thus need to be able to overwrite certain parameters when creating a service.
+
+This can be done by passing in the parameters as the optional second argument to container.get();
+
+Lets say you have the following service definition:
+```json
+  {
+    "myService": {
+      "module": "ExampleService",
+      "arguments": [
+        "%foo"
+      ],
+      "singleton": false
+    }
+  }
+```
+
+you can now retrieve multiple instances of this service by doing the following calls:
+
+```
+container.get('myService', {
+  foo: "some value"
+});
+container.get('myService', {
+  foo: "some other value"
+});
+```
+
+You can overwrite both services and parameters using this method.
 
 ## Registering parameters
 
@@ -39,9 +72,9 @@ To add a parameter to the container:
 myContainer.addParameter('parameterId', 'my-parameter');
 ```
 
-## Retrieving services
+## Retrieving parameters
 
-Now, this service can be retrieved anywhere using:
+Now, this parameter can be retrieved anywhere using:
 
 ```javascript
 myContainer.getParameter('parameterId');

@@ -37,6 +37,12 @@ definition.addArgument('@parameterId');
 
 When retrieving the service from the container, the container will retrieve the service using container::get.
 
-## Roadmap
+## Singleton
 
-* Named parameters and by-index
+By default, each service is a Singleton. Calling container.get() will thus always return the same instance.
+
+To overwrite this, you can call:
+```angular2html
+definition.setSingleton(false);
+```
+This will tell the container to create a new isntance everytime container.get() is called.

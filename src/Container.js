@@ -45,10 +45,17 @@ function Container(rootLoader) {
 Container.prototype = {
 
     /**
-     * @param id
+     * Returns the service for the given id.
+     *
+     * Optionally, an object of named parameters can be passed to the service.
+     * This is not supported for singletons.
+     *
+     * @param {string} id
+     * @param {*} parameters optional object with named parameters to replace
+     *
      * @returns {*}
      */
-    get: function get(id) {
+    get: function get(id, parameters) {
         let definition, service;
 
         if (id === 'service_locator' || id === 'service_container') {
@@ -68,7 +75,7 @@ Container.prototype = {
         this.loading[id] = true;
 
         try {
-            service = this.createService(definition);
+            service = this.createService(definition, parameters);
         } finally {
             delete this.loading[id];
         }
@@ -93,6 +100,7 @@ Container.prototype = {
      * Returns a list of services tagged with the given tag.
      *
      * @param {string} tag
+     *
      * @returns {Array}
      */
     getByTag: function getByTag(tag) {
@@ -110,6 +118,7 @@ Container.prototype = {
      *
      * @param {String} id
      * @param {String} modulePath
+     *
      * @returns {Definition}
      */
     register: function register(id, modulePath) {
@@ -123,6 +132,7 @@ Container.prototype = {
      *
      * @param {String} name
      * @param {*} value
+     *
      * @returns {Definition}
      */
     addParameter: function addParameter(name, value) {
@@ -135,13 +145,15 @@ Container.prototype = {
      * Create an instance of the service defined by definition.
      *
      * @param {Definition} definition
+     * @param {*} parameters optional object with named parameters to replace
+     *
      * @returns {*}
      */
-    createService: function createService(definition) {
+    createService: function createService(definition, parameters) {
         let serviceConstructor, serviceArguments;
 
         // resolve our arguments to actual services
-        serviceArguments = this.resolveArguments(definition.getArguments());
+        serviceArguments = this.resolveArguments(definition.getArguments(), parameters);
 
         // create our service with the required arguments
         serviceConstructor = this.get('service_locator').resolve(definition.getModulePath());
@@ -157,17 +169,32 @@ Container.prototype = {
      * Resolves an array of arguments
      *
      * @param {Array} argumentIds an array of argument ids to resolve
+     * @param {*} parameters optional object with named parameters to replace
+     *
      * @returns {Array} an array of resolved services
      */
-    resolveArguments: function resolveArguments(argumentIds) {
+    resolveArguments: function resolveArguments(argumentIds, parameters) {
+        let serviceId = null;
+        let parameterName = null;
+
         return argumentIds.map(function(argumentId) {
             switch(argumentId.charAt(0)) {
                 case '@':
-                    return this.get(argumentId.substr(1));
+                    serviceId = argumentId.substr(1);
+                    if (parameters && {}.hasOwnProperty.call(parameters, serviceId)) {
+                        return parameters[serviceId];
+                    }
+
+                    return this.get(serviceId);
                     break;
 
                 case '%':
-                    return this.getParameter(argumentId.substr(1));
+                    parameterName = argumentId.substr(1);
+                    if (parameters && {}.hasOwnProperty.call(parameters, parameterName)) {
+                        return parameters[parameterName];
+                    }
+
+                    return this.getParameter(parameterName);
                     break;
 
                 default:
