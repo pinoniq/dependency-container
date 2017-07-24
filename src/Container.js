@@ -99,18 +99,31 @@ Container.prototype = {
     /**
      * Returns a list of services tagged with the given tag.
      *
+     * @deprecated since 1.3.0 use getServicesByTag instead
+     *
      * @param {string} tag
      *
      * @returns {Array}
      */
     getByTag: function getByTag(tag) {
+        this.getServicesByTag(tag);
+    },
+
+    /**
+     * Returns a list of services tagged with the given tag.
+     *
+     * @param {string} tagName
+     *
+     * @returns {Array}
+     */
+    getServicesByTag: function getServicesByTagName(tagName) {
         const definitionIdsWithTag = Object.keys(this.definitions).filter(function filterByTag(id) {
-            return this.getDefinition(id).hasTag(tag);
+            return this.getDefinition(id).hasTag(tagName);
         }.bind(this));
 
         return definitionIdsWithTag.map(function mapDefinitionToService(id) {
             return this.get(id);
-        }.bind(this))
+        }.bind(this));
     },
 
     /**
@@ -150,7 +163,7 @@ Container.prototype = {
      * @returns {*}
      */
     createService: function createService(definition, parameters) {
-        let serviceConstructor, serviceArguments;
+        let serviceConstructor, serviceArguments, service, serviceLocatorTag;
 
         // resolve our arguments to actual services
         serviceArguments = this.resolveArguments(definition.getArguments(), parameters);
@@ -162,7 +175,18 @@ Container.prototype = {
         // We set the thisArg of the bind call to null since it will never be used.
         serviceArguments.unshift(null);
 
-        return new (Function.prototype.bind.apply(serviceConstructor, serviceArguments))();
+        service = new (Function.prototype.bind.apply(serviceConstructor, serviceArguments))();
+
+        // if the service is tagged with serviceLocator, locate all required services
+        // and add each of them to the service being constructed.
+        if (definition.hasTag('serviceLocator')) {
+            serviceLocatorTag = definition.getTag('serviceLocator');
+            this
+                .getServicesByTag(serviceLocatorTag.get('tag'))
+                .forEach(service[serviceLocatorTag.get('call')].bind(service));
+        }
+
+        return service;
     },
 
     /**

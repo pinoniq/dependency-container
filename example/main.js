@@ -11,3 +11,6 @@ const myOverwrittenService = container.get('ModuleA/myService', {
     foo: "A different message"
 });
 myOverwrittenService.test();
+
+const myServiceLocator = container.get('ModuleA/myServiceLocator');
+myServiceLocator.test();

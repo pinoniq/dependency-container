@@ -1,3 +1,5 @@
+const Tag = require('./../Tag');
+
 /**
  * @param {Container} container
  * @constructor
@@ -39,8 +41,8 @@ JsonFileLoader.prototype = {
                 });
             }
             if ({}.hasOwnProperty.call(serviceDefinition, 'tags')) {
-                serviceDefinition['tags'].forEach(function(tagName) {
-                    definition.addTag(tagName);
+                serviceDefinition['tags'].forEach(function(tagDefinition) {
+                    definition.addTag(new Tag(tagDefinition));
                 });
             }
 

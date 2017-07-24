@@ -46,3 +46,19 @@ To overwrite this, you can call:
 definition.setSingleton(false);
 ```
 This will tell the container to create a new isntance everytime container.get() is called.
+
+## ServiceLocator
+
+Some services need to be able to recieve a unlimited amount of other services.
+For this, we have so called ServiceLocators (stolen from Drupal 8).
+
+To tell the container your service is a service locator, tag it with the following tag definition:
+```json
+{
+  "tags": [
+    {"name": "serviceLocator", "tag": "example", "call": "addExample"}
+  ]
+}
+```
+
+What this tells the conainer is on service instantiation to retrieve all services tagged with example and add them to your service by calling the addExample method.

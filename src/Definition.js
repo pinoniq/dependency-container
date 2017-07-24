@@ -12,7 +12,7 @@ function Definition(modulePath) {
     this.arguments = [];
 
     /**
-     * @type {Array}
+     * @type {Tag[]}
      */
     this.tags = [];
 
@@ -60,7 +60,19 @@ Definition.prototype = {
     },
 
     /**
-     * @returns {Array}
+     * Returns the first tag found with the given name.
+     *
+     * @param tagName
+     * @returns {Tag}
+     */
+    getTag: function getTag(tagName) {
+        return this.tags.find(function findByTagName(tag) {
+            return tag.getName() === tagName;
+        });
+    },
+
+    /**
+     * @returns {Tag[]}
      */
     getTags: function getTags() {
         return this.tags;
@@ -71,7 +83,9 @@ Definition.prototype = {
      * @return {boolean}
      */
     hasTag: function hasTag(tagName) {
-        return this.tags.includes(tagName);
+        return this.tags.filter(function filterByTagName(tag) {
+            return tag.getName() === tagName;
+        }).length > 0;
     },
 
     /**

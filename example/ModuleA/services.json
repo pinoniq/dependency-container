@@ -9,6 +9,26 @@
         "%foo"
       ],
       "singleton": false
+    },
+    "myServiceLocator": {
+      "module": "ExampleServiceLocator",
+      "tags": [
+        {"name": "serviceLocator", "tag": "example", "call": "addFoo"}
+      ]
+    },
+    "serviceA": {
+      "module": "ExampleServiceA",
+      "arguments": [
+        "serviceA"
+      ],
+      "tags": ["example"]
+    },
+    "serviceB": {
+      "module": "ExampleServiceB",
+      "arguments": [
+        "serviceB"
+      ],
+      "tags": ["example"]
     }
   }
 }
